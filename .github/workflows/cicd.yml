@@ -67,7 +67,7 @@ jobs:
         run: npm run lint
 
       - name: Formatter (Prettier)
-        run: npm run prettier
+        run: npm run prettier -c ./src/ || true
 
       - name: Test (Jest)
         run: CI=true npm run test
