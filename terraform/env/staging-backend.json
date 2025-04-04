@@ -1,0 +1,5 @@
+{
+    "bucket": "tf-state-staging-636655795335-test",
+    "key": "terraform.tfstate",
+    "region": "us-east-1"
+}
