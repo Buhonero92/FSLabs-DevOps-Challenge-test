@@ -70,7 +70,9 @@ jobs:
         run: npm run prettier -c ./src/ || true
 
       - name: Test (Jest)
-        run: CI=true npm run test
+        env:
+          CI: true
+        run: npm run test
 
       - name: Build
         run: npm run build
@@ -79,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
             name: build-${{ needs.config.outputs.deployment_env }}
-            path: ./Build
+            path: ./build
 
       - name: Comment on PR for Sucess
         if: |
