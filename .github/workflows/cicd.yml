@@ -5,22 +5,20 @@ name: CICD Pipeline for my App
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "devel" branch
+  pull_request_target:
+    branches:
+      - devel
+      - stage
+      - prod
+    types:
+      - opened
+      - reopened
+      - synchronize
   push:
     branches:
       - devel
       - stage
       - prod
-
-  pull_request_target:
-    types: [
-        opened,
-        reopened,
-        synchronize
-    ]
-    branches:
-        - devel
-        - stage
-        - prod
 
 permissions:
   issues: write
