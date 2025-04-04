@@ -14,12 +14,12 @@ resource "aws_s3_bucket" "static_website_bucket" {
 }
 
 resource "aws_s3_bucket" "access_logs_bucket" {
-    bucket = "static-website-logs-${var.environment}-${local.account_id}"
+  bucket = "static-website-logs-${var.environment}-${local.account_id}"
 
-    tags = {
-      Environment = var.environment
-    }
-  
+  tags = {
+    Environment = var.environment
+  }
+
 }
 
 resource "aws_s3_bucket_ownership_controls" "ownership" {
@@ -47,7 +47,7 @@ resource "aws_s3_bucket_acl" "bucket_acl" {
 }
 
 resource "aws_s3_bucket_website_configuration" "example" {
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.static_website_bucket.id
 
   index_document {
     suffix = "index.html"
@@ -66,20 +66,20 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name = aws_s3_bucket.static_website_bucket.bucket_regional_domain_name
-    origin_id = local.s3_origin_id
+    origin_id   = local.s3_origin_id
   }
 
   enabled = true
 
   logging_config {
     include_cookies = false
-    bucket = aws_s3_bucket.access_logs_bucket.id
-    prefix = "logs/"
+    bucket          = aws_s3_bucket.access_logs_bucket.id
+    prefix          = "logs/"
   }
 
   default_cache_behavior {
-    allowed_methods = [ "GET", "HEAD" ]
-    cached_methods = [ "GET", "HEAD" ]
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
     target_origin_id = local.s3_origin_id
 
     viewer_protocol_policy = "redirect-to-https"
@@ -88,6 +88,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   restrictions {
     geo_restriction {
       restriction_type = none
+      locations        = []
     }
   }
 
