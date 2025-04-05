@@ -63,7 +63,6 @@ resource "aws_s3_bucket_acl" "bucket_acl" {
 
 resource "aws_s3_bucket_acl" "access_logs_bucket_acl" {
   bucket = aws_s3_bucket.access_logs_bucket.id
-  acl = "private"
   access_control_policy {
     grant {
       grantee {
