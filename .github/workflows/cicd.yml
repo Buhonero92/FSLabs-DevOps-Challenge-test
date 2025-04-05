@@ -156,6 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/devel' && 'development' || github.ref == 'refs/heads/stage' && 'staging' || github.ref == 'refs/heads/prod' && 'production' }}
     needs: 
+        - config
         - infra-deployment
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -194,6 +195,7 @@ jobs:
     needs: 
         - config
         - build
+        - apply
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
