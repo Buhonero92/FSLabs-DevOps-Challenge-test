@@ -26,6 +26,9 @@ resource "aws_s3_bucket_ownership_controls" "static_bucket_ownership" {
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
+  depends_on = [ 
+    aws_s3_bucket.static_website_bucket
+   ]
 }
 
 resource "aws_s3_bucket_ownership_controls" "logging_access_bucket_ownership" {
@@ -34,6 +37,10 @@ resource "aws_s3_bucket_ownership_controls" "logging_access_bucket_ownership" {
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
+
+  depends_on = [ 
+    aws_s3_bucket.access_logs_bucket
+   ]
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
@@ -56,9 +63,11 @@ resource "aws_s3_bucket_acl" "bucket_acl" {
 
 resource "aws_s3_bucket_acl" "access_logs_bucket_acl" {
   bucket = aws_s3_bucket.access_logs_bucket.id
+  acl = "private"
   access_control_policy {
     grant {
       grantee {
+        id = data.aws_canonical_user_id.current.id
         type = "CanonicalUser"
       }
       permission = "FULL_CONTROL"
@@ -109,6 +118,13 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     target_origin_id = local.s3_origin_id
 
     viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
   }
 
   restrictions {
