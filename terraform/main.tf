@@ -97,13 +97,22 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   policy = data.aws_iam_policy_document.allow_public_access.json
 }
 
+resource "aws_cloudfront_origin_access_control" "cloudfront_oac" {
+  name = "cloudfront-oac-s3"
+  origin_access_control_origin_type = "s3"
+  signing_behavior = "always"
+  signing_protocol = "sigv4"
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name = aws_s3_bucket.static_website_bucket.bucket_regional_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.cloudfront_oac.id
     origin_id   = local.s3_origin_id
   }
 
   enabled = true
+  default_root_object = "index.html"
 
   logging_config {
     include_cookies = false
