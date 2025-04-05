@@ -114,7 +114,7 @@ jobs:
           });
 
   infra-deployment:
-    name: 'Infrastructure deployment'
+    name: 'Terraform Plan'
     if: |
      github.event_name == 'push' &&
      (github.ref == 'refs/heads/devel' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/prod')
@@ -152,7 +152,7 @@ jobs:
         terraform plan -var "environment=${{ needs.config.outputs.deployment_env }}"
       
   apply:
-    name: "Apply Infra Changes"
+    name: "Terraform Apply"
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/devel' && 'development' || github.ref == 'refs/heads/stage' && 'staging' || github.ref == 'refs/heads/prod' && 'production' }}
     needs: 
