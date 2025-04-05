@@ -12,6 +12,7 @@ function App() {
         <hr />
         If you find this tool useful, you might enjoy reading my blog:{" "}
         <a href="https://rderik.com">rderik.com</a>
+        <div>Thanks for watching!!</div>
       </footer>
     </div>
   );
