@@ -19,11 +19,18 @@ resource "aws_s3_bucket" "access_logs_bucket" {
   tags = {
     Environment = var.environment
   }
-
 }
 
-resource "aws_s3_bucket_ownership_controls" "ownership" {
+resource "aws_s3_bucket_ownership_controls" "static_bucket_ownership" {
   bucket = aws_s3_bucket.static_website_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "logging_access_bucket_ownership" {
+  bucket = aws_s3_bucket.access_logs_bucket.id
+
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
@@ -42,8 +49,27 @@ resource "aws_s3_bucket_acl" "bucket_acl" {
   bucket = aws_s3_bucket.static_website_bucket.id
   acl    = "public-read"
   depends_on = [
+    aws_s3_bucket_ownership_controls.static_bucket_ownership,
     aws_s3_bucket_public_access_block.public_access
   ]
+}
+
+resource "aws_s3_bucket_acl" "access_logs_bucket_acl" {
+  bucket = aws_s3_bucket.access_logs_bucket.id
+  access_control_policy {
+    grant {
+      grantee {
+        type = "CanonicalUser"
+      }
+      permission = "FULL_CONTROL"
+    }
+    owner {
+      id = data.aws_canonical_user_id.current.id
+    }
+  }
+  depends_on = [ 
+    aws_s3_bucket_ownership_controls.logging_access_bucket_ownership
+   ]
 }
 
 resource "aws_s3_bucket_website_configuration" "example" {
@@ -73,7 +99,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   logging_config {
     include_cookies = false
-    bucket          = aws_s3_bucket.access_logs_bucket.id
+    bucket          = aws_s3_bucket.access_logs_bucket.bucket_regional_domain_name
     prefix          = "logs/"
   }
 
