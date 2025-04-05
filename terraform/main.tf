@@ -101,7 +101,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   depends_on = [ 
-    aws_s3_bucket.access_logs_bucket.id 
+    aws_s3_bucket.access_logs_bucket
   ]
 }
 
