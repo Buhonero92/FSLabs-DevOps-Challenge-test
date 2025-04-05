@@ -171,6 +171,12 @@ jobs:
         aws-region: us-east-1
 
     - uses: hashicorp/setup-terraform@v3
+  
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: |
+        cd terraform
+        terraform init --backend-config="env/${{ needs.config.outputs.deployment_env }}-backend.json"
 
     # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
